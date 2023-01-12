@@ -53,13 +53,18 @@ router.route('/save').post((req,res)=>{
   let msgList = req.body.msgList
   let len=17
   if (typeof(viewers)=='string'){
-    let id=viewers.slice(len-2,len).toUpperCase()
-    dataController.editWatchList(id, viewerList, viewTime)
-  }
+    dataController.getName(viewers.toUpperCase(), (err, id)=>{
+      if (id!=undefined){
+      // let id=viewers.slice(len-2,len).toUpperCase()
+      dataController.editWatchList(id, viewerList, viewTime)}
+  })}
   else if (viewers!=undefined) {
   for (let i=0; i<viewers.length; i++){
-    let id=viewers[i].slice(len-2,len).toUpperCase()
-    dataController.editWatchList(id, viewerList, viewTime)
+    dataController.getName(viewers[i].toUpperCase(), (err, id)=>{
+      if (id!=undefined){
+      // let id=viewers.slice(len-2,len).toUpperCase()
+      dataController.editWatchList(id, viewerList, viewTime)}
+  })
   }}
   console.log(viewTime)
   res.send('Data stored by the server')
