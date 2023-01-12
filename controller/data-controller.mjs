@@ -1,17 +1,5 @@
 import sqlite3 from 'sqlite3'
 
-export function editWatchList (id, viewerList, viewTime){
-    id = id.Name
-    console.log(id)
-    let index = viewerList.indexOf(id)
-    if (index==-1){
-        viewerList.push(id)
-        let add=10
-        viewTime.push(add)
-    }
-    else viewTime[index]+=10
-}
-
 export let getName = (MAC, callback) => {
     const sql = "SELECT Name FROM Person WHERE MAC = ?"
     const db = new sqlite3.Database('./controller/db-test.db')
@@ -20,5 +8,78 @@ export let getName = (MAC, callback) => {
         if (err){ console.log(err)
                 callback(err,null)}
         else {callback(null, row)}
+    })
+}
+
+export let checkWatchList = (MAC, talkId, callback) => {
+    const sql = "SELECT Duration FROM Watches WHERE MAC = ? AND TalkID = ?"
+    const db = new sqlite3.Database('./controller/db-test.db')
+    db.get(sql, [MAC, talkId], (err, row) => {
+        db.close()
+        if (err){ console.log(err)
+                callback(err,null)}
+        else {callback(null, row)}
+    })
+}
+
+export let updateWatchList = (MAC, talkId, duration, callback) => {
+    duration = duration+10
+    const sql = "UPDATE Watches SET Duration = ? WHERE MAC = ? AND TalkID = ?"
+    const db = new sqlite3.Database('./controller/db-test.db')
+    db.get(sql, [duration, MAC, talkId], (err, row) => {
+        db.close()
+    })
+}
+
+export let insertWatchList = (MAC, talkId, duration, callback) => {
+    duration = 10
+    const sql = "INSERT INTO Watches (MAC, TalkID, Duration) VALUES (?,?,?)"
+    const db = new sqlite3.Database('./controller/db-test.db')
+    db.get(sql, [MAC, talkId, duration], (err, row) => {
+        db.close()
+    })
+}
+
+export let insertQuestion = (Person, talkId) => {
+    const sql = "INSERT INTO Question (PersonMAC, TalkID) VALUES (?,?)"
+    const db = new sqlite3.Database('./controller/db-test.db')
+    db.get(sql, [Person, talkId], (err, row) => {
+        db.close()
+    })
+}
+
+export let clearAll = () => {
+    let sql = "DELETE FROM Watches"
+    const db = new sqlite3.Database('./controller/db-test.db')
+    db.get(sql)
+    sql = "DELETE FROM Question"
+    db.get(sql)
+    db.close()
+}
+
+export let getWatchList = (talkId, callback) => {
+    const sql = "SELECT Name, Duration FROM Watches JOIN Person on Watches.MAC=Person.MAC WHERE TalkID=?"
+    const db = new sqlite3.Database('./controller/db-test.db')
+    db.all(sql, [talkId], (err, row) => {
+        
+        if (err){ console.log(err)
+            db.close()
+            callback(err,null)}
+    else {
+        db.close()
+        callback(null, row)}
+    })
+}
+
+export let getQuestionList = (talkId, callback) => {
+    const sql = "SELECT Name FROM Question JOIN Person on Question.PersonMAC=Person.Name WHERE TalkID=?"
+    const db = new sqlite3.Database('./controller/db-test.db')
+    db.all(sql, [talkId], (err, row) => {
+        db.close()
+        if (err){ console.log(err)
+            
+            callback(err,null)}
+    else {
+        callback(null, row)}
     })
 }
