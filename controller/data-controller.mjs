@@ -1,7 +1,7 @@
 import sqlite3 from 'sqlite3'
 
 export let getName = (MAC, callback) => {
-    const sql = "SELECT Name FROM Person WHERE MAC = ?"
+    const sql = "SELECT Name FROM Participant WHERE MAC = ?"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.get(sql, [MAC], (err, row) => {
         db.close()
@@ -41,7 +41,7 @@ export let insertWatchList = (MAC, talkId, duration, callback) => {
 }
 
 export let insertQuestion = (Person, talkId) => {
-    const sql = "INSERT INTO Question (PersonMAC, TalkID) VALUES (?,?)"
+    const sql = "INSERT INTO Question (PersonMAC, RoomID) VALUES (?,?)"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.get(sql, [Person, talkId], (err, row) => {
         db.close()
@@ -58,7 +58,7 @@ export let clearAll = () => {
 }
 
 export let getWatchList = (talkId, callback) => {
-    const sql = "SELECT Name, Duration FROM Watches JOIN Person on Watches.MAC=Person.MAC WHERE TalkID=?"
+    const sql = "SELECT Name, Duration FROM Watches JOIN Participant on Watches.MAC=Participant.MAC WHERE TalkID=?"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.all(sql, [talkId], (err, row) => {
         
@@ -72,7 +72,7 @@ export let getWatchList = (talkId, callback) => {
 }
 
 export let getQuestionList = (talkId, callback) => {
-    const sql = "SELECT Name FROM Question JOIN Person on Question.PersonMAC=Person.Name WHERE TalkID=?"
+    const sql = "SELECT Name FROM Question JOIN Participant on Question.PersonMAC=Participant.Name WHERE RoomID=?"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.all(sql, [talkId], (err, row) => {
         db.close()

@@ -16,12 +16,12 @@ router.route('/').get((req, res) => {
 router.route('/savequest').post((req,res)=>{
   let questioner = req.body.questioner.toUpperCase()
   let index = questionerList.indexOf(questioner)
-  let talkId = 1
+  let roomId = 1
   if (index==-1){
     dataController.getName(questioner, (err, person)=>{
       if (person!=undefined){
         questionerList.push(questioner)
-        dataController.insertQuestion(person.Name, talkId)
+        dataController.insertQuestion(person.Name, roomId)
         res.send('Questioner stored by the server')
       }
       else {res.send('Fail')}
