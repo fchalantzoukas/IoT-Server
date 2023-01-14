@@ -41,9 +41,11 @@ export let insertWatchList = (MAC, talkId, duration, callback) => {
 }
 
 export let insertQuestion = (Person, talkId) => {
-    const sql = "INSERT INTO Question (PersonMAC, RoomID) VALUES (?,?)"
+    const d = new Date()
+    const time = d.getTime()
+    const sql = "INSERT INTO Question (PersonMAC, RoomID, Timestamp) VALUES (?,?,?)"
     const db = new sqlite3.Database('./controller/db-test.db')
-    db.get(sql, [Person, talkId], (err, row) => {
+    db.get(sql, [Person, talkId, time], (err, row) => {
         db.close()
     })
 }
@@ -72,7 +74,7 @@ export let getWatchList = (talkId, callback) => {
 }
 
 export let getQuestionList = (talkId, callback) => {
-    const sql = "SELECT Name FROM Question JOIN Participant on Question.PersonMAC=Participant.Name WHERE RoomID=?"
+    const sql = "SELECT Name, Timestamp FROM Question JOIN Participant on Question.PersonMAC=Participant.MAC WHERE RoomID=?"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.all(sql, [talkId], (err, row) => {
         db.close()

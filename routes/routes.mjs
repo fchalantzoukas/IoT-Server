@@ -21,7 +21,7 @@ router.route('/savequest').post((req,res)=>{
     dataController.getName(questioner, (err, person)=>{
       if (person!=undefined){
         questionerList.push(questioner)
-        dataController.insertQuestion(person.Name, roomId)
+        dataController.insertQuestion(questioner, roomId)
         res.send('Questioner stored by the server')
       }
       else {res.send('Fail')}
@@ -41,8 +41,11 @@ router.route('/viewquest').get((req,res)=>{
       responseStr='No Questions'
     }
     else{
+      const d = new Date()
+      let time = d.getTime()
   for (let i=0; i<rows.length; i++){
-    responseStr+=rows[i].Name+", "
+    time = time - parseInt(rows[i].Timestamp)
+    responseStr+=rows[i].Name+": "+(time>60000?String(Math.round(time/60000))+" minute(s) ago, ":String(Math.round(time/1000))+" seconds ago, ")
   }
   responseStr = responseStr.slice(0,responseStr.length-2)}
   res.send(responseStr)
