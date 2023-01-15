@@ -74,30 +74,67 @@ router.route('/save').post((req,res)=>{
   // let msgList = req.body.msgList
   let talkId=1
   if (typeof(viewers)=='string'){
-    let MAC = viewers.toUpperCase()
-    dataController.getName(MAC, (err, id)=>{
+    let MACID = viewers.toUpperCase()
+    dataController.getName(MACID, (err, id)=>{
       if (id!=undefined){
-      dataController.checkWatchList(MAC, talkId, (err, duration)=>{
+      dataController.checkWatchList(MACID, talkId, (err, duration)=>{
         if (duration!=undefined){
-          dataController.updateWatchList(MAC, talkId, duration.Duration)
+          dataController.updateWatchList(MACID, talkId, duration.Duration)
         }
-        else {dataController.insertWatchList(MAC, talkId, duration)}
+        else {dataController.insertWatchList(MACID, talkId, duration)}
       })}
   })}
   else if (viewers!=undefined) {
   for (let i=0; i<viewers.length; i++){
-      let MAC = viewers[i].toUpperCase()
-      dataController.getName(MAC, (err, id)=>{
+      let MACID = viewers[i].toUpperCase()
+      dataController.getName(MACID, (err, id)=>{
       if (id!=undefined){
-      dataController.checkWatchList(MAC, talkId, (err, duration)=>{
+      dataController.checkWatchList(MACID, talkId, (err, duration)=>{
         if (duration!=undefined){
-          dataController.updateWatchList(MAC, talkId, duration.Duration)
+          dataController.updateWatchList(MACID, talkId, duration.Duration)
         }
-        else {dataController.insertWatchList(MAC, talkId, duration)}
+        else {dataController.insertWatchList(MACID, talkId, duration)}
       })}
   })
   }}
   res.send('Data stored by the server')
+})
+
+router.route('/getauthbeacons').get((req,res)=>{
+  let hallID=1
+  dataController.getAuthBeacons(hallID, (err, rows) =>{
+  if (err){
+    res.send('Fail')}
+    else if (rows.length==0){
+      res.send('No Auth Beacons found for this hall')
+    }
+    else{
+  res.send(rows)}
+  })
+})
+
+router.route('/saveclosest').post((req,res)=>{
+  let closestID = req.body.closestID==undefined?undefined:req.body.closestID.toUpperCase()
+  let kioskID = req.body.kiosk.toUpperCase()
+  dataController.updateClosest(closestID, kioskID, (err,rows)=>{
+    if (err){
+      res.send('Fail')}
+    else {
+      res.send(rows.Company+" kiosk updated")
+    }
+  })
+})
+
+router.route('/getclosest/:id').get((req,res)=>{
+  dataController.getClosest(req.params.id.toUpperCase(), (err,row)=>{
+    if (err){
+      res.send('Fail')}
+    else if (row==undefined){
+      res.send('No one close')}
+    else {
+      res.send(row.Name)
+    }
+  })
 })
 
 router.route('/clear').post((req,res)=>{
