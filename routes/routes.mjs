@@ -42,10 +42,11 @@ router.route('/viewquest').get((req,res)=>{
     }
     else{
       const d = new Date()
-      let time = d.getTime()
+      const time = d.getTime()
   for (let i=0; i<rows.length; i++){
-    time = time - parseInt(rows[i].Timestamp)
-    responseStr+=rows[i].Name+": "+(time>60000?String(Math.round(time/60000))+" minute(s) ago, ":String(Math.round(time/1000))+" seconds ago, ")
+    let timeDiff = 0
+    timeDiff = time - parseInt(rows[i].Timestamp)
+    responseStr+=rows[i].Name+": "+(timeDiff>60000?String(Math.round(timeDiff/60000))+" minute(s) ago, ":String(Math.round(timeDiff/1000))+" seconds ago, ")
   }
   responseStr = responseStr.slice(0,responseStr.length-2)}
   res.send(responseStr)
