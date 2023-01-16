@@ -123,7 +123,7 @@ export let updateClosest = (closestID, kioskID, callback) => {
 }
 
 export let getClosest = (kioskID, callback) => {
-    const sql = "SELECT Name FROM Participant JOIN Kiosk on Participant.MACID=Kiosk.ClosestPerson WHERE Kiosk.KioskMACID = ?"
+    const sql = "SELECT * FROM Participant JOIN Kiosk on Participant.MACID=Kiosk.ClosestPerson WHERE Kiosk.KioskMACID = ?"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.get(sql, [kioskID], (err, row) => {
         db.close()

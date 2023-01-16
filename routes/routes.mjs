@@ -130,9 +130,9 @@ router.route('/getclosest/:id').get((req,res)=>{
     if (err){
       res.send('Fail')}
     else if (row==undefined){
-      res.send('No one close')}
+      res.render('near-me')}
     else {
-      res.send(row.Name)
+      res.render('near-me',{name: row.Name, profession: row.Job, email: row.Email, company: row.Company, phone: row.Phone})
     }
   })
 })
