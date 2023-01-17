@@ -54,7 +54,7 @@ router.route('/viewquest').get((req,res)=>{
 })
 
 
-router.route('/view').get((req,res)=>{
+router.route('/viewers').get((req,res)=>{
   let responseStr=""
   let id=1
   dataController.getWatchList(id, (err, rows) =>{
@@ -69,7 +69,7 @@ router.route('/view').get((req,res)=>{
   })
 })
 
-router.route('/save').post((req,res)=>{
+router.route('/saveviewers').post((req,res)=>{
   let viewers = req.body.viewers
   // let msgList = req.body.msgList
   let talkId=1
@@ -114,13 +114,25 @@ router.route('/getauthbeacons').get((req,res)=>{
 })
 
 router.route('/saveclosest').post((req,res)=>{
-  let closestID = req.body.closestID==undefined?undefined:req.body.closestID.toUpperCase()
-  let kioskID = req.body.kiosk.toUpperCase()
+  let closestID = req.body.closestID
+  let kioskID = req.body.kiosk
   dataController.updateClosest(closestID, kioskID, (err,rows)=>{
     if (err){
       res.send('Fail')}
     else {
       res.send(rows.Company+" kiosk updated")
+    }
+  })
+})
+
+router.route('/exchangedata').post((req,res)=>{
+  let closestID = req.body.closestID
+  let initID = req.body.initID
+  dataController.exchangeData(initID, closestID, (err,rows)=>{
+    if (err){
+      res.send('Fail')}
+    else {
+      res.send("Data exchanged between "+initID+", "+closestID+" saved")
     }
   })
 })

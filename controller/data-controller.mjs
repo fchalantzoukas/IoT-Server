@@ -134,3 +134,14 @@ export let getClosest = (kioskID, callback) => {
                     callback(null,row)
                 }})
         }
+
+export let exchangeData = (initID, closestID, callback) => {
+    let sql = "INSERT INTO Request (MACID1, MACID2) VALUES (?,?)"
+    const db = new sqlite3.Database('./controller/db-test.db')
+    db.get(sql, [initID, closestID], (err, row) => {
+    db.close()
+        if (err){
+            callback(err,null)
+        }
+        else {callback(null,row)}})
+        }

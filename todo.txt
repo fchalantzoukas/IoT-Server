@@ -1,0 +1,5 @@
+1) Error codes
+2) GTW error handling
+3) Save Data button (προφίλ)
+4) Data exchange (αυτόματα)
+5) Fetch για no refresh?
