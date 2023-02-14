@@ -5,7 +5,7 @@ const router = express.Router();
 
 let questionRoom = []
 let questionerList = []
-let dataController = await import('../controller/data-controller.mjs')
+import * as dataController from '../controller/data-controller.mjs'
 
 router.route('/').get((req, res) => {
   res.status(200).send('Welcome!')
