@@ -3,42 +3,36 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 const router = express.Router();
 
-// let viewerList = []
-// let viewTime = []
+let questionRoom = []
 let questionerList = []
 let dataController = await import('../controller/data-controller.mjs')
 
 router.route('/').get((req, res) => {
-  res.send('Welcome!')
+  res.status(200).send('Welcome!')
 })
 
 
-router.route('/savequest').post((req,res)=>{
+router.route('/savequestion').post((req,res)=>{
   let questioner = req.body.questioner.toUpperCase()
-  let index = questionerList.indexOf(questioner)
-  let roomId = 1
-  if (index==-1){
-    dataController.getName(questioner, (err, person)=>{
-      if (person!=undefined){
-        questionerList.push(questioner)
-        dataController.insertQuestion(questioner, roomId)
-        res.send('Questioner stored by the server')
-      }
-      else {res.send('Fail')}
+  let roomId = req.body.roomId
+  dataController.getName(questioner, (err, person) => {
+    if (person != undefined) {
+      dataController.insertQuestion(questioner, roomId, (err,rows)=>{
+      if (err){if (err.errno==19){res.status(409).send('This Question is Already Stored')}}
+      else {res.status(200).send('Questioner stored by the server')}
     })}
-  else{
-  res.send('Pass')
-  }
+    else { res.status(500).send('Questioner not found') }
+  })
+  
 })
 
-router.route('/viewquest').get((req,res)=>{
-  let responseStr=""
-  let id=1
+router.route('/questions/:id').get((req,res)=>{
+  let id=(req.params.id==undefined?1:req.params.id)
   dataController.getQuestionList(id, (err, rows) =>{
   if (err){
-    responseStr='Fail'}
+    res.status(400).send('Fail')}
     else if (rows.length==0){
-      responseStr='No Questions'
+      res.status(200).send('No Questions')
     }
     else{
       const d = new Date()
@@ -46,33 +40,40 @@ router.route('/viewquest').get((req,res)=>{
   for (let i=0; i<rows.length; i++){
     let timeDiff = 0
     timeDiff = time - parseInt(rows[i].Timestamp)
-    responseStr+=rows[i].Name+": "+(timeDiff>60000?String(Math.round(timeDiff/60000))+" minute(s) ago, ":String(Math.round(timeDiff/1000))+" seconds ago, ")
+    rows[i].Timestamp=(timeDiff>60000?String(Math.round(timeDiff/60000))+" minute(s) ago, ":String(Math.round(timeDiff/1000))+" seconds ago, ")
+    let splitNames=rows[i].Name.split(' ')
+    let initials = splitNames[0][0]+(splitNames[1]==undefined?'':splitNames[1][0])
+    rows[i].Initials = initials
   }
-  responseStr = responseStr.slice(0,responseStr.length-2)}
-  res.send(responseStr)
+  res.status(200).render('questions', {questions: rows, room: "Room "+id, layout: 'room.hbs'})}
   })
 })
 
+router.route('/questions/').get((req,res)=>{
+  res.status(300).redirect('/questions/1')})
 
-router.route('/viewers').get((req,res)=>{
-  let responseStr=""
-  let id=1
+router.route('/viewers/:id').get((req,res)=>{
+  let id=(req.params.id==undefined?1:req.params.id)
   dataController.getWatchList(id, (err, rows) =>{
   if (err||(rows==undefined)){
-    responseStr='Fail'}
+    res.status(400).send('Fail')}
     else{
   for (let i=0; i<rows.length; i++){
-    responseStr+=rows[i].Name+": "+rows[i].Duration+" minutes, "
+    let splitNames=rows[i].Name.split(' ')
+    let initials = splitNames[0][0]+(splitNames[1]==undefined?'':splitNames[1][0])
+    rows[i].Initials = initials
+    rows[i].Timestamp = rows[i].Duration+" minutes"
   }
-  responseStr = responseStr.slice(0,responseStr.length-2)}
-  res.send(responseStr)
+  res.status(200).render('questions', {questions: rows, room: id, layout: 'room.hbs'})}
   })
 })
+
+router.route('/viewers/').get((req,res)=>{
+  res.status(300).redirect('/viewers/1')})
 
 router.route('/saveviewers').post((req,res)=>{
   let viewers = req.body.viewers
-  // let msgList = req.body.msgList
-  let talkId=1
+  let talkId=req.body.talkId
   if (typeof(viewers)=='string'){
     let MACID = viewers.toUpperCase()
     dataController.getName(MACID, (err, id)=>{
@@ -97,19 +98,19 @@ router.route('/saveviewers').post((req,res)=>{
       })}
   })
   }}
-  res.send('Data stored by the server')
+  res.status(200).send('Data stored by the server')
 })
 
 router.route('/getauthbeacons').get((req,res)=>{
-  let hallID=1
-  dataController.getAuthBeacons(hallID, (err, rows) =>{
+  // let hallID=1
+  dataController.getAuthBeacons((err, rows) =>{
   if (err){
-    res.send('Fail')}
+    res.status(400).send('Fail')}
     else if (rows.length==0){
-      res.send('No Auth Beacons found for this hall')
+      res.status(200).send('No Auth Beacons found')
     }
     else{
-  res.send(rows)}
+  res.status(200).send(rows)}
   })
 })
 
@@ -118,9 +119,9 @@ router.route('/saveclosest').post((req,res)=>{
   let kioskID = req.body.kiosk
   dataController.updateClosest(closestID, kioskID, (err,rows)=>{
     if (err){
-      res.send('Fail')}
+      res.status(400).send('Fail')}
     else {
-      res.send(rows.Company+" kiosk updated")
+      res.status(200).send(rows.Company+" kiosk updated")
     }
   })
 })
@@ -130,9 +131,11 @@ router.route('/exchangedata').post((req,res)=>{
   let initID = req.body.initID
   dataController.exchangeData(initID, closestID, (err,rows)=>{
     if (err){
-      res.send('Fail')}
+      if (err.errno==19){res.status(409).send('This Request is Already Stored')}
+      else{
+      res.status(400).send('Failure')}}
     else {
-      res.send("Data exchanged between "+initID+", "+closestID+" saved")
+      res.send("Data exchange between "+initID+", "+closestID+" saved")
     }
   })
 })
@@ -140,29 +143,31 @@ router.route('/exchangedata').post((req,res)=>{
 router.route('/getclosest/:id').get((req,res)=>{
   dataController.getClosest(req.params.id.toUpperCase(), (err,row)=>{
     if (err){
-      res.send('Fail')}
+      res.status(400).send('Fail')}
     else if (row==undefined){
-      res.render('near-me')}
+      res.status(200).render('near-me')}
     else {
-      res.render('near-me',{name: row.Name, profession: row.Job, email: row.Email, company: row.Company, phone: row.Phone})
+      res.status(200).render('near-me',{name: row.Name, profession: row.Job, email: row.Email, company: row.Company, phone: row.Phone})
     }
   })
 })
 
 router.route('/clear').post((req,res)=>{
+  let roomId = req.body.roomId
   // if (process.env.KEY==req.body.key){
-  questionerList = []
-  dataController.clearAll()
-  res.send('History Cleared')
-  // res.send('Fail')
+  for (let room in questionRoom){
+    if (room==roomId){
+      questionerList.slice(questionRoom.indexOf(room))}}
+  dataController.clearQuestions(roomId)
+  res.status(200).send('Questions Cleared')
 })
 
 router.route('*').get((req,res)=>{
-  res.send('404!')
+  res.status(404).json({error:'Invalid URL'})
 })
 
 router.route('*').post((req,res)=>{
-  res.send('404!')
+  res.status(404).json({error:'Invalid URL'})
 })
 
 export default router;

@@ -23,7 +23,7 @@ export let checkWatchList = (MACID, talkId, callback) => {
 }
 
 export let updateWatchList = (MACID, talkId, duration, callback) => {
-    duration = duration+10
+    duration = duration+5
     const sql = "UPDATE Watches SET Duration = ? WHERE MACID = ? AND TalkID = ?"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.get(sql, [duration, MACID, talkId], (err, row) => {
@@ -32,7 +32,7 @@ export let updateWatchList = (MACID, talkId, duration, callback) => {
 }
 
 export let insertWatchList = (MACID, talkId, duration, callback) => {
-    duration = 10
+    duration = 5
     const sql = "INSERT INTO Watches (MACID, TalkID, Duration) VALUES (?,?,?)"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.get(sql, [MACID, talkId, duration], (err, row) => {
@@ -40,27 +40,27 @@ export let insertWatchList = (MACID, talkId, duration, callback) => {
     })
 }
 
-export let insertQuestion = (Person, talkId) => {
+export let insertQuestion = (Person, talkId, callback) => {
     const d = new Date()
     const time = d.getTime()
     const sql = "INSERT INTO Question (PersonMACID, RoomID, Timestamp) VALUES (?,?,?)"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.get(sql, [Person, talkId, time], (err, row) => {
         db.close()
+        if (err){callback(err,null)}
+        else {callback(null, row)}
     })
 }
 
-export let clearAll = () => {
-    let sql = "DELETE FROM Watches"
+export let clearQuestions = (roomId) => {
+    let sql = "DELETE FROM Question WHERE RoomID=?"
     const db = new sqlite3.Database('./controller/db-test.db')
-    db.get(sql)
-    sql = "DELETE FROM Question"
-    db.get(sql)
+    db.get(sql, [roomId])
     db.close()
 }
 
 export let getWatchList = (talkId, callback) => {
-    const sql = "SELECT Name, Duration FROM Watches JOIN Participant on Watches.MACID=Participant.MACID WHERE TalkID=?"
+    const sql = "SELECT Name, Email, Duration FROM Watches JOIN Participant on Watches.MACID=Participant.MACID WHERE TalkID=? ORDER BY Duration DESC, Name DESC"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.all(sql, [talkId], (err, row) => {
         
@@ -74,7 +74,7 @@ export let getWatchList = (talkId, callback) => {
 }
 
 export let getQuestionList = (talkId, callback) => {
-    const sql = "SELECT Name, Timestamp FROM Question JOIN Participant on Question.PersonMACID=Participant.MACID WHERE RoomID=?"
+    const sql = "SELECT Name, Email, Timestamp FROM Question JOIN Participant on Question.PersonMACID=Participant.MACID WHERE RoomID=? ORDER BY Timestamp ASC"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.all(sql, [talkId], (err, row) => {
         db.close()
@@ -87,7 +87,7 @@ export let getQuestionList = (talkId, callback) => {
 }
 
 export let getAuthBeacons = (hallId, callback) => {
-    const sql = "SELECT KioskMACID FROM Kiosk WHERE HallID=?"
+    const sql = "SELECT KioskMACID FROM Kiosk"
     const db = new sqlite3.Database('./controller/db-test.db')
     db.all(sql, [hallId], (err, row) => {
         db.close()

@@ -1,0 +1,64 @@
+<div class=e52_1103><span class="e52_1104">Lecture {{room}}</span></div>
+<div class=e52_1105>
+    <div class='menubar'>
+        <div class='readframe_menu'><span class="readtext_menu">Mark as read</span>
+            <img class='polygon_icon1' src="/images/polygon.png"></img>
+        </div>
+        <div class='participantframe_menu'>
+            <span class="Participanttext_menu">Participant</span>
+            <img class='polygon_icon2' src="/images/polygon.png"></img>
+        </div>
+        <div class='timeframe_menu'><span class="timetext_menu">Time</span>
+            <img class='polygon_icon3' src="/images/polygon.png"></img>
+
+        </div>
+
+        <div class=refresh_frame>
+            <button class='refresh_button' type="button" onclick="window.location.reload()">
+                <img class='refresh_icon' src="/images/refresh.png" alt="buttonpng"></img>
+
+            </button>
+        </div>
+
+
+    </div>
+    {{#each questions}}
+    <div class='question'>
+        <div class='checkframe'>
+            <img class='left_dots' src="/images/left_dots.png"></img>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="cb1">
+                <label for="cb1"></label>
+            </div>
+
+        </div>
+        <div class='nameframe'>
+
+            <div class='avatars'>
+                <div class='avatar2'>
+                </div>
+                <div class='initials'>
+                    {{Initials}}</div>
+            </div>
+            <div class='name'>
+                {{Name}}</div>
+            <div class='email'>
+                {{Email}}</div>
+
+        </div>
+
+        <div class='timeframe'>
+            <div class='time'>
+                {{Timestamp}}
+            </div>
+        </div>
+
+        <div class='delete_frame'>
+            <button class='delete_button' type="button">
+                <input type='image' class='delete_icon' src="/images/delete1.png" alt="buttonpng"></img>
+
+            </button>
+        </div>
+    </div>
+    {{/each}}

@@ -185,6 +185,7 @@ e12 {
 {
     /* width:100px; */
     height: 120%;
+	cursor: pointer;
 	/* position: absolute; */
 	/* right: 20%; */
     /* background-image: url(images/refresh1.png); */
