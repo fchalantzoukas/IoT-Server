@@ -1,5 +1,6 @@
 import sqlite3 from 'sqlite3'
 
+//Returns the corresponding Name from the MAC Address ID
 export let getName = (MACID, callback) => {
     const sql = "SELECT Name FROM Participant WHERE MACID = ?"
     const db = new sqlite3.Database('./controller/db-test.db')
@@ -11,6 +12,7 @@ export let getName = (MACID, callback) => {
     })
 }
 
+//Checks if a viewer has already been stored in the viewer list of a lecture/talk
 export let checkWatchList = (MACID, talkId, callback) => {
     const sql = "SELECT Duration FROM Watches WHERE MACID = ? AND TalkID = ?"
     const db = new sqlite3.Database('./controller/db-test.db')
@@ -22,6 +24,7 @@ export let checkWatchList = (MACID, talkId, callback) => {
     })
 }
 
+//Updates the Duration for a viewer
 export let updateWatchList = (MACID, talkId, duration, callback) => {
     duration = duration+5
     const sql = "UPDATE Watches SET Duration = ? WHERE MACID = ? AND TalkID = ?"
@@ -31,6 +34,7 @@ export let updateWatchList = (MACID, talkId, duration, callback) => {
     })
 }
 
+//Adds a new viewer in the viewer list
 export let insertWatchList = (MACID, talkId, duration, callback) => {
     duration = 5
     const sql = "INSERT INTO Watches (MACID, TalkID, Duration) VALUES (?,?,?)"
@@ -40,6 +44,7 @@ export let insertWatchList = (MACID, talkId, duration, callback) => {
     })
 }
 
+//Stores a new question
 export let insertQuestion = (Person, talkId, callback) => {
     const d = new Date()
     const time = d.getTime()
@@ -52,6 +57,7 @@ export let insertQuestion = (Person, talkId, callback) => {
     })
 }
 
+//Deletes old questions
 export let clearQuestions = (roomId) => {
     let sql = "DELETE FROM Question WHERE RoomID=?"
     const db = new sqlite3.Database('./controller/db-test.db')
@@ -59,6 +65,7 @@ export let clearQuestions = (roomId) => {
     db.close()
 }
 
+//Returns the viewer list of a talk/lecture
 export let getWatchList = (talkId, callback) => {
     const sql = "SELECT Name, Email, Duration FROM Watches JOIN Participant on Watches.MACID=Participant.MACID WHERE TalkID=? ORDER BY Duration DESC, Name DESC"
     const db = new sqlite3.Database('./controller/db-test.db')
@@ -73,6 +80,7 @@ export let getWatchList = (talkId, callback) => {
     })
 }
 
+//Returns the question list of a room
 export let getQuestionList = (talkId, callback) => {
     const sql = "SELECT Name, Email, Timestamp FROM Question JOIN Participant on Question.PersonMACID=Participant.MACID WHERE RoomID=? ORDER BY Timestamp ASC"
     const db = new sqlite3.Database('./controller/db-test.db')
@@ -86,6 +94,7 @@ export let getQuestionList = (talkId, callback) => {
     })
 }
 
+//Returns a list of the authorised beacons
 export let getAuthBeacons = (hallId, callback) => {
     const sql = "SELECT KioskMACID FROM Kiosk"
     const db = new sqlite3.Database('./controller/db-test.db')
@@ -99,6 +108,7 @@ export let getAuthBeacons = (hallId, callback) => {
     })
 }
 
+//Updates the closest person to a particular kiosk
 export let updateClosest = (closestID, kioskID, callback) => {
     let sql = "UPDATE Kiosk SET ClosestPerson = ? WHERE KioskMACID = ?"
     const db = new sqlite3.Database('./controller/db-test.db')
@@ -122,6 +132,7 @@ export let updateClosest = (closestID, kioskID, callback) => {
     })
 }
 
+//Returns the closest person to a particular kiosk
 export let getClosest = (kioskID, callback) => {
     const sql = "SELECT * FROM Participant JOIN Kiosk on Participant.MACID=Kiosk.ClosestPerson WHERE Kiosk.KioskMACID = ?"
     const db = new sqlite3.Database('./controller/db-test.db')
@@ -135,6 +146,7 @@ export let getClosest = (kioskID, callback) => {
                 }})
         }
 
+//Save a request for data exchange
 export let exchangeData = (initID, closestID, callback) => {
     let sql = "INSERT INTO Request (MACID1, MACID2) VALUES (?,?)"
     const db = new sqlite3.Database('./controller/db-test.db')

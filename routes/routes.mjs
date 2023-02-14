@@ -11,7 +11,7 @@ router.route('/').get((req, res) => {
   res.status(200).send('Welcome!')
 })
 
-
+//Saves a question in the DB
 router.route('/savequestion').post((req,res)=>{
   let questioner = req.body.questioner.toUpperCase()
   let roomId = req.body.roomId
@@ -26,6 +26,7 @@ router.route('/savequestion').post((req,res)=>{
   
 })
 
+//Renders the questions of a room given its ID
 router.route('/questions/:id').get((req,res)=>{
   let id=(req.params.id==undefined?1:req.params.id)
   dataController.getQuestionList(id, (err, rows) =>{
@@ -52,6 +53,7 @@ router.route('/questions/:id').get((req,res)=>{
 router.route('/questions/').get((req,res)=>{
   res.status(300).redirect('/questions/1')})
 
+//Renders the viewers of a lecture given its ID
 router.route('/viewers/:id').get((req,res)=>{
   let id=(req.params.id==undefined?1:req.params.id)
   dataController.getWatchList(id, (err, rows) =>{
@@ -71,6 +73,7 @@ router.route('/viewers/:id').get((req,res)=>{
 router.route('/viewers/').get((req,res)=>{
   res.status(300).redirect('/viewers/1')})
 
+//Saves the current viewers of a talk
 router.route('/saveviewers').post((req,res)=>{
   let viewers = req.body.viewers
   let talkId=req.body.talkId
@@ -101,6 +104,7 @@ router.route('/saveviewers').post((req,res)=>{
   res.status(200).send('Data stored by the server')
 })
 
+//Returns a list of the auth beacons
 router.route('/getauthbeacons').get((req,res)=>{
   // let hallID=1
   dataController.getAuthBeacons((err, rows) =>{
@@ -114,6 +118,7 @@ router.route('/getauthbeacons').get((req,res)=>{
   })
 })
 
+//Stores the closest person to a particular kiosk
 router.route('/saveclosest').post((req,res)=>{
   let closestID = req.body.closestID
   let kioskID = req.body.kiosk
@@ -126,6 +131,7 @@ router.route('/saveclosest').post((req,res)=>{
   })
 })
 
+//Saves a data exchange request
 router.route('/exchangedata').post((req,res)=>{
   let closestID = req.body.closestID
   let initID = req.body.initID
@@ -140,6 +146,7 @@ router.route('/exchangedata').post((req,res)=>{
   })
 })
 
+//Renders the data of the closest person to a particular kiosk given its ID
 router.route('/getclosest/:id').get((req,res)=>{
   dataController.getClosest(req.params.id.toUpperCase(), (err,row)=>{
     if (err){
@@ -152,6 +159,7 @@ router.route('/getclosest/:id').get((req,res)=>{
   })
 })
 
+//Deletes old questions
 router.route('/clear').post((req,res)=>{
   let roomId = req.body.roomId
   // if (process.env.KEY==req.body.key){
@@ -162,10 +170,12 @@ router.route('/clear').post((req,res)=>{
   res.status(200).send('Questions Cleared')
 })
 
+//Responds to bad URLs
 router.route('*').get((req,res)=>{
   res.status(404).json({error:'Invalid URL'})
 })
 
+//Responds to bad URLs
 router.route('*').post((req,res)=>{
   res.status(404).json({error:'Invalid URL'})
 })
