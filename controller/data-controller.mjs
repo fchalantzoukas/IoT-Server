@@ -95,10 +95,10 @@ export let getQuestionList = (talkId, callback) => {
 }
 
 //Returns a list of the authorised beacons
-export let getAuthBeacons = (hallId, callback) => {
+export let getAuthBeacons = (callback) => {
     const sql = "SELECT KioskMACID FROM Kiosk"
     const db = new sqlite3.Database('./controller/db-test.db')
-    db.all(sql, [hallId], (err, row) => {
+    db.all(sql,(err, row) => {
         db.close()
         if (err){ console.log(err)
             
