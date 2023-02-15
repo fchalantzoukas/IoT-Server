@@ -146,6 +146,19 @@ router.route('/exchangedata').post((req,res)=>{
   })
 })
 
+//Returns a list of the data exchange requests
+router.route('/getexchanges').get((req,res)=>{
+  dataController.getExchanges((err, rows) =>{
+  if (err){
+    res.status(400).send('Fail')}
+    else if (rows.length==0){
+      res.status(200).send('No Data Exchange Requests found')
+    }
+    else{
+  res.status(200).send(rows)}
+  })
+})
+
 //Renders the data of the closest person to a particular kiosk given its ID
 router.route('/getclosest/:id').get((req,res)=>{
   dataController.getClosest(req.params.id.toUpperCase(), (err,row)=>{

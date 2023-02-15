@@ -108,6 +108,20 @@ export let getAuthBeacons = (callback) => {
     })
 }
 
+//Returns a list of the data exchange requests
+export let getExchanges = (callback) => {
+    const sql = "SELECT * FROM Request"
+    const db = new sqlite3.Database('./controller/db-test.db')
+    db.all(sql,(err, row) => {
+        db.close()
+        if (err){ console.log(err)
+            
+            callback(err,null)}
+    else {
+        callback(null, row)}
+    })
+}
+
 //Updates the closest person to a particular kiosk
 export let updateClosest = (closestID, kioskID, callback) => {
     let sql = "UPDATE Kiosk SET ClosestPerson = ? WHERE KioskMACID = ?"
